@@ -1,0 +1,33 @@
+{
+    "name": "CherryBlossomFestivalMarks",
+    "records": [
+       {
+           "recType": "POI",
+           "site": "Memorial Park",
+	   "icon": {"iconUrl": "/static/img/FXPAL_logo.png",
+		    "iconSize": [36,36]},
+           "label": "FXPAL Booth",
+           "lat": 37.32593,
+           "lon": -122.04247,
+           "xxxwindow": "helper",
+           "url": "http://fxpal.com",
+	   "minZoomLevel": 19
+       },
+       {
+          "id": "quinlan_path_1",
+          "site": "Memorial Park",
+          "recType": "robotTrail",
+          "robotType": "wheelchair",
+          "layerName": "Wheelchair",
+          "description": "Walkaround Memorial Park.",
+	  "tourName": "memorial_park_tour_5",
+          "dataUrl": "/static/data/paths/MemorialPark/quinlan_path_1tweak.json",
+          "youtubeId": "RoUTzQAB1PE",
+	  "xxyoutubeDeltaT": -25.83,
+	  "youtubeDeltaT": 0.0,
+	  "coordSys": "Quinlan",
+	  "height": 1.0
+       }
+    ]
+}
+

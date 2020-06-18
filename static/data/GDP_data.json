@@ -1,0 +1,17 @@
+{
+    "name": "GDP",
+    "type": "Layer",
+    "records": [
+       {
+	 "title": "Per Capita GDP per nation",
+	 "recType": "KML",
+         "id": "1",
+         "xurl": "data/kml/EnocksCrossCountryTrip.kml",
+         "url": "/static/data/kml/gdpPerCapita2008.kmz"
+       },
+       {
+          "recType": "flyHome",
+          "duration": 5
+       }
+    ]
+}
