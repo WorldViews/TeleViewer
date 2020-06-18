@@ -1,8 +1,7 @@
 
 var WV = {};
 
-function report(str)
-{
+function report(str) {
     console.log(str);
 }
 
@@ -12,6 +11,7 @@ WV.layersUrl = "/static/data/layers.json";
 WV.defaultBillboardIconURL = "/images/mona_cat.jpg";
 //WV.defaultAnchorIconURL = "/Viewer/images/purplePlacemark.png";
 WV.defaultAnchorIconURL = "/static/img/purplePlacemark.png";
+WV.allowNotes = false;
 WV.playVideoInIframe = true;
 WV.showPagesInIframe = true;
 WV.prevEndId = null;
@@ -22,9 +22,9 @@ WV.currentBillboard = null;
 WV.viewer = null;
 WV.scene = null;
 WV.thisPersonData = null;
-WV.origin = [0,0];
+WV.origin = [0, 0];
 WV.curPos = null;
-WV.myId = "_anon_"+new Date().getTime();
+WV.myId = "_anon_" + new Date().getTime();
 WV.myName = "anon";
 WV.numPolls = 0;
 WV.recs = {};
@@ -37,22 +37,22 @@ Cesium.BingMapsApi.defaultKey = "ApkF-vdI2ix3rcw-JCklfZG98zznVZfuAzRGf1khbyRZrev
 var cesiumContainer = document.getElementById('cesiumContainer');
 
 WV.viewer = new Cesium.Viewer('cesiumContainer', {
-	//    imageryProvider : new Cesium.ArcGisMapServerImageryProvider({
-	//        url : 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer',
-	//	enablePickFeatures: false
-	//    }),
+    //    imageryProvider : new Cesium.ArcGisMapServerImageryProvider({
+    //        url : 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer',
+    //	enablePickFeatures: false
+    //    }),
     animation: false,
-    timeline : false,
+    timeline: false,
     //animation: true,
     //timeline : true,
     //    fullscreenElement : cesiumContainer,
-    baseLayerPicker : true
+    baseLayerPicker: true
 });
 WV.entities = WV.viewer.entities;
-WV.scene = WV.viewer.scene;				 
+WV.scene = WV.viewer.scene;
 WV.scene.globe.depthTestAgainstTerrain = true;
 
-WV.getLocation = function() {
+WV.getLocation = function () {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(WV.handleLocation);
     } else {
@@ -60,26 +60,27 @@ WV.getLocation = function() {
     }
 }
 
-WV.handleLocation = function(position) {
+WV.handleLocation = function (position) {
     var lat = position.coords.latitude;
     var lon = position.coords.longitude;
-    WV.origin = [lat,lon];
-    WV.curPos = [lat,lon, 1000000];
+    WV.origin = [lat, lon];
+    WV.curPos = [lat, lon, 1000000];
     report("lat: " + lat + "lon: " + lon);
-    report("pos: "+JSON.stringify(position));
-    WV.thisPersonData = { 'op': 'create',
-			  'id': 'person0',
-			  't': WV.getClockTime(),
-			  'origin': WV.origin };
+    report("pos: " + JSON.stringify(position));
+    WV.thisPersonData = {
+        'op': 'create',
+        'id': 'person0',
+        't': WV.getClockTime(),
+        'origin': WV.origin
+    };
 }
 
 
-WV.getTwitterImages = function(url)
-{
+WV.getTwitterImages = function (url) {
     report("***** getTwitterImages ******");
     var layer = WV.layers["photos"];
     if (layer.billboards == null)
-	layer.billboards = {};
+        layer.billboards = {};
     layer.bbCollection = new Cesium.BillboardCollection();
     WV.getJSON("data/imageTweets_data.json", WV.handleImageRecs);
     WV.scene.primitives.add(layer.bbCollection);
@@ -87,44 +88,43 @@ WV.getTwitterImages = function(url)
 }
 
 //function handleImageRecs(data)
-WV.handleImageRecs = function(recs)
-{
+WV.handleImageRecs = function (recs) {
     report("****** handleImageRecs ******");
     recs = WV.getRecords(recs);
-    report("num recs: "+recs.length);
+    report("num recs: " + recs.length);
     var layer = WV.layers["photos"];
     var maxNumRecs = 2;
     var tailRecs = null;
     if (recs.length > maxNumRecs) {
-	report("slicing...");
-	tailRecs = recs.slice(maxNumRecs);
-	recs = recs.slice(0,maxNumRecs-1);
+        report("slicing...");
+        tailRecs = recs.slice(maxNumRecs);
+        recs = recs.slice(0, maxNumRecs - 1);
     }
-    report("num recs now: "+recs.length);
+    report("num recs now: " + recs.length);
     var imageList = recs;
-    for (var i=0; i<imageList.length; i++) {
+    for (var i = 0; i < imageList.length; i++) {
         layer.numObjs++;
         if (layer.numObjs > layer.maxNum)
             return;
         var ispec = imageList[i];
         //report(" i: "+i+"  "+JSON.stringify(ispec));
-	var id = ispec.id;
+        var id = ispec.id;
         WV.prevEndId = id;
         var imageUrl = ispec.imageUrl;
         if (!imageUrl)
-            imageUrl = layer.imageServer+"images/twitter_images/"+id+"_p2.jpg";
+            imageUrl = layer.imageServer + "images/twitter_images/" + id + "_p2.jpg";
         //imageUrl = "image1.jpg";
         var lon = ispec.lonlat[0];
         var lat = ispec.lonlat[1];
         var b = WV.addBillboard(layer.bbCollection, lat, lon, imageUrl, id,
-				layer.scale, layer.height, layer.showTethers);
+            layer.scale, layer.height, layer.showTethers);
         layer.billboards[id] = b;
-	b.show = layer.visible;
-	b._wvid = id;
-	report("ispec: "+JSON.stringify(ispec));
+        b.show = layer.visible;
+        b._wvid = id;
+        report("ispec: " + JSON.stringify(ispec));
     }
     if (tailRecs != null) {
-	setTimeout(function() { WV.handleImageRecs(tailRecs); }, 200);
+        setTimeout(function () { WV.handleImageRecs(tailRecs); }, 200);
     }
 }
 
@@ -133,194 +133,192 @@ This gets called with a Cesium object and tries to find
 one of our own objects ('rec') that we have associated
 with it.
  */
-WV.findRec = function(obj)
-{
-    report("WV.findRec: "+obj);
+WV.findRec = function (obj) {
+    report("WV.findRec: " + obj);
     var id;
     OBJ_ = obj;
     if (!obj)
-	return null;
+        return null;
     if (obj._wvrec) {
-	return obj._wvrec;
+        return obj._wvrec;
     }
     if (obj.primitive && obj.primitive._wvrec) { //WTF?!!!!
-	return obj.primitive._wvrec;
+        return obj.primitive._wvrec;
     }
     if (!obj.id)
-	return null;
+        return null;
     if (typeof obj.id === 'string' || obj.id instanceof String) {
-	id = obj.id;
+        id = obj.id;
     }
     else {
-	id = obj.id._id;
+        id = obj.id._id;
     }
-    report("id "+id);
+    report("id " + id);
     rec = WV.recs[id];
-    report("rec: "+rec);
+    report("rec: " + rec);
     return rec;
 }
 
 
-WV.onLeftClick = function(e) {
+WV.onLeftClick = function (e) {
     report("left click.....");
     if (e.shiftDown)
-	report(" **** SHIFT ****");
+        report(" **** SHIFT ****");
     if (e.ctrlDown)
-	report(" **** CTRL ****");
+        report(" **** CTRL ****");
     if (e.altDown)
-	report(" **** ALT ****");
+        report(" **** ALT ****");
     var pickedObject = WV.scene.pick(e.position);
     if (!Cesium.defined(pickedObject)) {
-	return;
+        return;
     }
     var pickPos = WV.scene.pickPosition(e.position);
     cpo = pickedObject;
     var id = pickedObject.id;
     var rec = WV.recs[id];
     if (!rec) {
-	rec = WV.findRec(pickedObject);
-	if (rec) {
-	    report("got rec: "+rec);
-	    id = rec.id;
-	    report("id: "+id);
-	}
+        rec = WV.findRec(pickedObject);
+        if (rec) {
+            report("got rec: " + rec);
+            id = rec.id;
+            report("id: " + id);
+        }
     }
     if (!rec) {
-	report("Cannot find rec for id: "+id);
-	PICKED_OBJ = pickedObject;
-	BAD_ID = id;
-	return;
+        report("Cannot find rec for id: " + id);
+        PICKED_OBJ = pickedObject;
+        BAD_ID = id;
+        return;
     }
     var layerName = rec.layerName;
     var layer = WV.layers[layerName];
-    report("click picked..... pickedObject._id "+id+ " layer: "+layerName);
+    report("click picked..... pickedObject._id " + id + " layer: " + layerName);
     //var rec = layer.recs[id];
     if (rec.clickHandler) {
-	rec.clickHandler(rec, e.position, pickPos, e, pickedObject);
+        rec.clickHandler(rec, e.position, pickPos, e, pickedObject);
     }
     else if (layer.clickHandler) {
-	layer.clickHandler(rec, e.position, pickPos, e, pickedObject);
+        layer.clickHandler(rec, e.position, pickPos, e, pickedObject);
     }
     else {
-	report("*** no click handler");
-	WV.Trails.handleClick(rec, e.position, pickPos, e, pickedObject);
+        report("*** no click handler");
+        WV.Trails.handleClick(rec, e.position, pickPos, e, pickedObject);
     }
-    report("LEFT_CLICK e: "+JSON.stringify(e));
+    report("LEFT_CLICK e: " + JSON.stringify(e));
     //WV.viewer.trackedEntity = undefined;
 };
 
-WV.setupCesium = function()
-{
+WV.setupCesium = function () {
     // If the mouse is over the billboard, change its scale and color
     var handler = new Cesium.ScreenSpaceEventHandler(WV.scene.canvas);
     WV.screenSpaceEventHandler = handler;
-    handler.setInputAction(function(movement) {
+    handler.setInputAction(function (movement) {
         var pickedObject = WV.scene.pick(movement.endPosition);
-	if (!Cesium.defined(pickedObject)) {
+        if (!Cesium.defined(pickedObject)) {
             if (WV.currentBillboard) {
                 WV.currentBillboard.scale = WV.currentBillboard.unselectedScale;
-		if (WV.currentBillboard.tether) {
-		    //WV.currentBillboard.tether.show = false;
-		}
-	    }
+                if (WV.currentBillboard.tether) {
+                    //WV.currentBillboard.tether.show = false;
+                }
+            }
             WV.currentBillboard = null;
             return;
         }
         //mpo = pickedObject;
         var id = pickedObject.id;
-	_PICKED_OBJ_ = pickedObject;
-	var rec = WV.recs[id];
-	if (rec == null || typeof(id) == "object") {
-	    id = id.id;
-	    rec = WV.recs[id];
-	}
-	if (rec == null) {
-	    //report("trying _wvRec");
-	    rec = pickedObject.id._wvRec;
-	}
-	if (rec == null) {
-	    report("***** MOUSE_MOVE no rec for id: "+id);
-	    //report("***** setupCesium no rec for id: "+JSON.stringify(id));
-	    _ID_ = id;
-	    return;
-	}
-	//var layerName = WV.recs[id].layerName;
-	var layerName = rec.layerName;
-	var layer = WV.layers[layerName];
-	if (!layer) {
-	    report("no layer for layerName: "+layerName+" id: "+id+" rec: "+WV.toJSON(rec));
-	    return;
-	}
+        _PICKED_OBJ_ = pickedObject;
+        var rec = WV.recs[id];
+        if (rec == null || typeof (id) == "object") {
+            id = id.id;
+            rec = WV.recs[id];
+        }
+        if (rec == null) {
+            //report("trying _wvRec");
+            rec = pickedObject.id._wvRec;
+        }
+        if (rec == null) {
+            report("***** MOUSE_MOVE no rec for id: " + id);
+            //report("***** setupCesium no rec for id: "+JSON.stringify(id));
+            _ID_ = id;
+            return;
+        }
+        //var layerName = WV.recs[id].layerName;
+        var layerName = rec.layerName;
+        var layer = WV.layers[layerName];
+        if (!layer) {
+            report("no layer for layerName: " + layerName + " id: " + id + " rec: " + WV.toJSON(rec));
+            return;
+        }
         //report("move over id "+id);
-	if (!layer.billboards) {
-	    report("no billboards for layer "+layerName);
-	    return;
-	}
+        if (!layer.billboards) {
+            report("no billboards for layer " + layerName);
+            return;
+        }
         var b = layer.billboards[id];
-	if (b == null && layer.picbillboards) {
-	    report("*** hack for picbillboards... ***");
-	    b = layer.picbillboards[id];
-	    report("b: "+b);
-	}
-	if (b == null) {
-	    report("checking moveHandler for layer "+layerName);
-	    if (layer.moveHandler) {
-		report("calling it...");
-		var pickPos = WV.scene.pickPosition(movement.endPosition);
-		layer.moveHandler(rec, movement.endPosition, pickPos);
-	    }
-	    return;
-	}
+        if (b == null && layer.picbillboards) {
+            report("*** hack for picbillboards... ***");
+            b = layer.picbillboards[id];
+            report("b: " + b);
+        }
+        if (b == null) {
+            report("checking moveHandler for layer " + layerName);
+            if (layer.moveHandler) {
+                report("calling it...");
+                var pickPos = WV.scene.pickPosition(movement.endPosition);
+                layer.moveHandler(rec, movement.endPosition, pickPos);
+            }
+            return;
+        }
         if (WV.currentBillboard && b != WV.currentBillboard) {
             WV.currentBillboard.scale = WV.currentBillboard.unselectedScale;
-	    if (WV.currentBillboard.tether) {
-		//WV.currentBillboard.tether.show = false;
-	    }
+            if (WV.currentBillboard.tether) {
+                //WV.currentBillboard.tether.show = false;
+            }
         }
         WV.currentBillboard = b;
         //report("b.scale "+b.scale);
         //b.scale = WV.bbScaleSelected;
-        b.scale = 1.5*b.unselectedScale;
-	if (b.tether) {
-	    b.tether.show = true;
-	}
-	else {
-	    // could have made tethers lazy and add
-	    // here as needed.   Maybe do that later.
-	}
+        b.scale = 1.5 * b.unselectedScale;
+        if (b.tether) {
+            b.tether.show = true;
+        }
+        else {
+            // could have made tethers lazy and add
+            // here as needed.   Maybe do that later.
+        }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
-    handler.setInputAction(function(e) {
+    handler.setInputAction(function (e) {
         report("left down.....");
         var pickedObject = WV.scene.pick(e.position);
-	if (!Cesium.defined(pickedObject)) {
+        if (!Cesium.defined(pickedObject)) {
             return;
         }
         //cpo = pickedObject;
         var id = pickedObject.id;
-	var rec = WV.recs[id];
-	//if (!rec) {
-	//    report("Trying pickedObject._wvRec");
-	//    var rec = pickedObject._wvRec;
-	//}
-	if (!rec) {
-	    rec = WV.findRec(pickedObject);
-	}
-	if (!rec) {
-	    report("Cannot find rec for id: "+id);
-	    PICKED_OBJ = pickedObject;
-	    BAD_ID = id;
-	    return;
-	}
-	var layerName = rec.layerName;
-	var layer = WV.layers[layerName];
-	if (!layer) {
-	    report("no layer for layerName: "+layerName+" id: "+id+" rec: "+WV.toJSON(rec));
-	    return;
-	}
-        report("click picked..... pickedObject._id "+id);
+        var rec = WV.recs[id];
+        //if (!rec) {
+        //    report("Trying pickedObject._wvRec");
+        //    var rec = pickedObject._wvRec;
+        //}
+        if (!rec) {
+            rec = WV.findRec(pickedObject);
+        }
+        if (!rec) {
+            report("Cannot find rec for id: " + id);
+            PICKED_OBJ = pickedObject;
+            BAD_ID = id;
+            return;
+        }
+        var layerName = rec.layerName;
+        var layer = WV.layers[layerName];
+        if (!layer) {
+            report("no layer for layerName: " + layerName + " id: " + id + " rec: " + WV.toJSON(rec));
+            return;
+        }
+        report("click picked..... pickedObject._id " + id);
         var rec = layer.recs[id];
-	layer.pickHandler(rec);
+        layer.pickHandler(rec);
         //WV.playVid(rec);
     }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
 
@@ -328,41 +326,42 @@ WV.setupCesium = function()
     // but it didn't work.
     //handler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-    handler.setInputAction( function(e) {e.shiftDown=false;
-	                                 e.ctrlDown=false;
-					 e.altDown=false;
-					 WV.onLeftClick(e)},
-	                    Cesium.ScreenSpaceEventType.LEFT_CLICK);
-    handler.setInputAction( function(e) {e.shiftDown=true; WV.onLeftClick(e)},
-			    Cesium.ScreenSpaceEventType.LEFT_CLICK,
-			    Cesium.KeyboardEventModifier.SHIFT);
-    handler.setInputAction( function(e) {e.ctrlDown=true; WV.onLeftClick(e)},
-			    Cesium.ScreenSpaceEventType.LEFT_CLICK,
-			    Cesium.KeyboardEventModifier.CTRL);
-    handler.setInputAction( function(e) {e.altDown=true; WV.onLeftClick(e)},
-			    Cesium.ScreenSpaceEventType.LEFT_CLICK,
-			    Cesium.KeyboardEventModifier.ALT);
+    handler.setInputAction(function (e) {
+        e.shiftDown = false;
+        e.ctrlDown = false;
+        e.altDown = false;
+        WV.onLeftClick(e)
+    },
+        Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    handler.setInputAction(function (e) { e.shiftDown = true; WV.onLeftClick(e) },
+        Cesium.ScreenSpaceEventType.LEFT_CLICK,
+        Cesium.KeyboardEventModifier.SHIFT);
+    handler.setInputAction(function (e) { e.ctrlDown = true; WV.onLeftClick(e) },
+        Cesium.ScreenSpaceEventType.LEFT_CLICK,
+        Cesium.KeyboardEventModifier.CTRL);
+    handler.setInputAction(function (e) { e.altDown = true; WV.onLeftClick(e) },
+        Cesium.ScreenSpaceEventType.LEFT_CLICK,
+        Cesium.KeyboardEventModifier.ALT);
 
-    handler.setInputAction(function(e) {
-	    report("LEFT_DOUBLE_CLICK e: "+JSON.stringify(e));
-	    WV.handleNoteClick(e);
-	    //WV.viewer.trackedEntity = undefined;
-	    //WV.hideAnimationWidget();
-	}, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+    handler.setInputAction(function (e) {
+        report("LEFT_DOUBLE_CLICK e: " + JSON.stringify(e));
+        if (WV.allowNotes)
+            WV.handleNoteClick(e);
+        //WV.viewer.trackedEntity = undefined;
+        //WV.hideAnimationWidget();
+    }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
 }
 
-WV.playVidInPopup = function(rec)
-{
+WV.playVidInPopup = function (rec) {
     var youtubeId = rec.youtubeId;
-    var url = "https://www.youtube.com/watch?v="+youtubeId;
+    var url = "https://www.youtube.com/watch?v=" + youtubeId;
     window.open(url, "DroneVidioView");
     //setTimeout(function() {
     //}, 400);
 }
 
-WV.playVidInIFrame = function(rec)
-{
+WV.playVidInIFrame = function (rec) {
     var youtubeId = rec.youtubeId;
     WVYT.playVideo(youtubeId, rec);
     /*
@@ -373,69 +372,64 @@ WV.playVidInIFrame = function(rec)
     */
 }
 
-WV.playVid = function(rec)
-{
-    setTimeout(function() {
-	if (!rec.youtubeId) {
-	   WV.showPage(rec);
-	   return;
-	}
-	if (WV.playVideoInIframe)
-	    WV.playVidInIFrame(rec);
-	else
-	    WV.playVidInPopup(rec);
-	}, 200);
+WV.playVid = function (rec) {
+    setTimeout(function () {
+        if (!rec.youtubeId) {
+            WV.showPage(rec);
+            return;
+        }
+        if (WV.playVideoInIframe)
+            WV.playVidInIFrame(rec);
+        else
+            WV.playVidInPopup(rec);
+    }, 200);
 }
 
-WV.showPage = function(rec)
-{
-    report("show page: "+JSON.stringify(rec));
+WV.showPage = function (rec) {
+    report("show page: " + JSON.stringify(rec));
     var winName = null;
     if (rec.layerName) {
-	var layer = WV.layers[rec.layerName];
-	if (layer)
-	    winName = layer.windowName;
+        var layer = WV.layers[rec.layerName];
+        if (layer)
+            winName = layer.windowName;
     }
-    setTimeout(function() {
-	    if (WV.showPagesInIframe && !winName) {
-		WV.pageWidget.show();
-		WV.pageWidget.setSrc(rec.url);
-	    }
-            else {
-                if (!winName)
-		    winName = "HTMLPages";
-                report("winName: "+winName);
-		window.open(rec.url, winName);
-	    }
+    setTimeout(function () {
+        if (WV.showPagesInIframe && !winName) {
+            WV.pageWidget.show();
+            WV.pageWidget.setSrc(rec.url);
+        }
+        else {
+            if (!winName)
+                winName = "HTMLPages";
+            report("winName: " + winName);
+            window.open(rec.url, winName);
+        }
     }, 300);
 }
 
-WV.handleNoteClick = function(e)
-{
-    report("handleClick e: "+JSON.stringify(e));
+WV.handleNoteClick = function (e) {
+    report("handleClick e: " + JSON.stringify(e));
     var cartesian = WV.viewer.camera.pickEllipsoid(e.position, WV.scene.globe.ellipsoid);
     if (cartesian) {
-	var gpos = Cesium.Cartographic.fromCartesian(cartesian);
-	var lon = Cesium.Math.toDegrees(gpos.longitude);
-	var lat = Cesium.Math.toDegrees(gpos.latitude);
-	report("picked: "+lon+" "+lat);
-	WV.Note.initNote(lon, lat);
-	WV.Note.setVisibility(true);
-	//WV.Note.sendNote(lon, lat, "This is a note made at "+new Date());
+        var gpos = Cesium.Cartographic.fromCartesian(cartesian);
+        var lon = Cesium.Math.toDegrees(gpos.longitude);
+        var lat = Cesium.Math.toDegrees(gpos.latitude);
+        report("picked: " + lon + " " + lat);
+        WV.Note.initNote(lon, lat);
+        WV.Note.setVisibility(true);
+        //WV.Note.sendNote(lon, lat, "This is a note made at "+new Date());
     }
     else {
-	report("no intersect...");
+        report("no intersect...");
     }
 }
 
-WV.simplePickHandler = function(rec)
-{
-    report("picked record: "+JSON.stringify(rec));
+WV.simplePickHandler = function (rec) {
+    report("picked record: " + JSON.stringify(rec));
 }
 
-WV.simpleClickHandler = function(rec)
-{
-    report("clicked record: "+JSON.stringify(rec));
+WV.simpleClickHandler = function (rec) {
+    report("clicked record: " + JSON.stringify(rec));
 }
 
 /*
@@ -443,22 +437,32 @@ WV.simpleClickHandler = function(rec)
   an error message in the console if there is a parse error
   in the JSON.
  */
-WV.getJSON = function(url, handler)
-{
-    report(">>>>> getJSON: "+url);
+WV.getJSON = function (url, handler) {
+    report(">>>>> getJSON: " + url);
     $.ajax({
         url: url,
-	dataType: 'text',
-	success: function(str) {
-		data = JSON.parse(str);
-		handler(data);
-	    }
-	});
+        dataType: 'text',
+        success: function (str) {
+            var data;
+            try {
+                data = JSON.parse(str);
+            }
+            catch (err) {
+                console.log("err: " + err);
+                alert("Error in json for: " + url + "\n" + err);
+                throw "Error";
+            }
+            handler(data);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log("Failed to get JSON for " + url);
+            return;
+        }
+    });
 }
 
 
-WV.getStatusObj = function()
-{
+WV.getStatusObj = function () {
     WV.numPolls++;
     var cpos = WV.viewer.camera.positionCartographic;
     var clat = WV.toDegrees(cpos.latitude);
@@ -466,18 +470,18 @@ WV.getStatusObj = function()
     WV.curPos = [clat, clon, cpos.height];
     var t = WV.getClockTime();
     var status = {
-	'type': 'people',
-	'userId': WV.myId,
-	'name': WV.myName,
-	'origin': WV.origin,
-	'curPos': WV.curPos,
-	't': t,
-	'n': WV.numPolls};
+        'type': 'people',
+        'userId': WV.myId,
+        'name': WV.myName,
+        'origin': WV.origin,
+        'curPos': WV.curPos,
+        't': t,
+        'n': WV.numPolls
+    };
     return status;
 }
 
-WV.reportStatus = function()
-{
+WV.reportStatus = function () {
     //report("reportStatus");
     var status = WV.getStatusObj();
     wvCom.sendStatus(status);
@@ -485,16 +489,14 @@ WV.reportStatus = function()
 }
 
 
-WV.hideAnimationWidget = function()
-{
+WV.hideAnimationWidget = function () {
     if (WV.viewer.animation)
-	WV.viewer.animation.destroy();
+        WV.viewer.animation.destroy();
     if (WV.viewer.timeline)
-	WV.viewer.timeline.destroy();
+        WV.viewer.timeline.destroy();
 }
 
-WV.createModel = function(entities, opts)
-{
+WV.createModel = function (entities, opts) {
     var name = opts.name;
     var url = opts.url;
     var lat = opts.lat;
@@ -505,23 +507,23 @@ WV.createModel = function(entities, opts)
     var roll = opts.roll || 0;
     var scale = opts.scale || 1.0;
     report("----------- WV.createModel -------------");
-    report("WV.createModel "+name+" url: "+url+" lat: "+lat+" lon: "+lon+"  ht: "+height);
-    report("     heading: "+heading+" pitch: "+pitch+" roll: "+roll);
+    report("WV.createModel " + name + " url: " + url + " lat: " + lat + " lon: " + lon + "  ht: " + height);
+    report("     heading: " + heading + " pitch: " + pitch + " roll: " + roll);
     var viewer = WV.viewer;
     //viewer.entities.removeAll();
     var position = Cesium.Cartesian3.fromDegrees(lon, lat, height);
     var orientation = Cesium.Transforms.headingPitchRollQuaternion(position, heading, pitch, roll);
 
     var entity = entities.add({
-        name : url,
-        position : position,
-        orientation : orientation,
-        model : {
-            uri : url,
+        name: url,
+        position: position,
+        orientation: orientation,
+        model: {
+            uri: url,
             scale: scale,
-	    //            minimumPixelSize : 128,
-            minimumPixelSize : 8,
-            maximumScale : 20000
+            //            minimumPixelSize : 128,
+            minimumPixelSize: 8,
+            maximumScale: 20000
         }
     });
     return entity;
@@ -540,26 +542,24 @@ WV.addModel = function(collection, name, url, lat, lon, h)
     return e;
 }
 */
-function testJunk()
-{
+function testJunk() {
     report("----------- testJunk -------------");
     var entities = WV.viewer.entities;
     var lon = -123.0744619;
     var lat = 44.0503706;
     WV.addModel(null, "Airplane", '../static/models/CesiumAir/Cesium_Air.glb', lat, lon, 5000.0);
-    WV.addModel(null, "Gr",       '../static/models/CesiumGround/Cesium_Ground.glb', lat, lon, 0);
-    WV.addModel(null, "Milk",     '../static/models/CesiumMilkTruck/CesiumMilkTruck-kmc.glb', lat, lon, 0);
-    e = 
-    WV.addModel(null, "Man",  '../static/models/CesiumMan/Cesium_Man.glb', lat, lon, 0);
+    WV.addModel(null, "Gr", '../static/models/CesiumGround/Cesium_Ground.glb', lat, lon, 0);
+    WV.addModel(null, "Milk", '../static/models/CesiumMilkTruck/CesiumMilkTruck-kmc.glb', lat, lon, 0);
+    e =
+        WV.addModel(null, "Man", '../static/models/CesiumMan/Cesium_Man.glb', lat, lon, 0);
     WV.viewer.trackedEntity = e;
 };
 
-WV.addKML = function(url, opts)
-{
-    report("addKML "+url.slice(0,50));
+WV.addKML = function (url, opts) {
+    report("addKML " + url.slice(0, 50));
     var options = {
-	camera : WV.viewer.scene.camera,
-	canvas : WV.viewer.scene.canvas
+        camera: WV.viewer.scene.camera,
+        canvas: WV.viewer.scene.canvas
     };
     //WV.viewer.camera.flyHome(5);
     //WV.viewer.dataSources.add(Cesium.KmlDataSource.load('data/kml/Enocks Cross Country Trip.kml', options));
@@ -567,135 +567,130 @@ WV.addKML = function(url, opts)
     return ds;
 }
 
-WV.addGeoJSON = function(url, opts)
-{
-    report("addGeoJSON "+url);
+WV.addGeoJSON = function (url, opts) {
+    report("addGeoJSON " + url);
     var options = {
-	camera : WV.viewer.scene.camera,
-	canvas : WV.viewer.scene.canvas
+        camera: WV.viewer.scene.camera,
+        canvas: WV.viewer.scene.canvas
     };
     var ds = WV.viewer.dataSources.add(Cesium.GeoJsonDataSource.load(url, options));
     return ds;
 }
 
-WV.addDataSource = function(dataSource)
-{
-    report("addDataSource "+dataSource);
+WV.addDataSource = function (dataSource) {
+    report("addDataSource " + dataSource);
     WV.viewer.dataSources.add(dataSource);
 }
 
-WV.removeDataSource = function(dataSource)
-{
-    report("removeDataSource "+dataSource);
+WV.removeDataSource = function (dataSource) {
+    report("removeDataSource " + dataSource);
     var i = WV.viewer.dataSources.indexOf(dataSource);
-    report(" dataSource index: "+i);
+    report(" dataSource index: " + i);
     WV.viewer.dataSources.remove(dataSource);
 }
 
-function testJunk2()
-{
+function testJunk2() {
     options = {
-	camera : WV.viewer.scene.camera,
-	canvas : WV.viewer.scene.canvas
+        camera: WV.viewer.scene.camera,
+        canvas: WV.viewer.scene.canvas
     };
 
     //WV.viewer.dataSources.add(Cesium.KmlDataSource.load('data/kml/gdpPerCapita2008.kmz', options));
     WV.viewer.dataSources.add(Cesium.KmlDataSource.load('data/kml/Enocks Cross Country Trip.kml', options));
 }
 
-WV.handleDroppedURL = function(e, url)
-{
-    report("handling URL: "+url);
+WV.handleDroppedURL = function (e, url) {
+    report("handling URL: " + url);
     //E = e;
     var pos = e;
     var cartesian = WV.viewer.camera.pickEllipsoid(pos, WV.scene.globe.ellipsoid);
     if (cartesian) {
-	var gpos = Cesium.Cartographic.fromCartesian(cartesian);
-	var lon = Cesium.Math.toDegrees(gpos.longitude);
-	var lat = Cesium.Math.toDegrees(gpos.latitude);
-	report("URL dropped at: "+lon+" "+lat);
-	var lname = "beyondthefence";
-	var rec = {'url': url,
-		   'lon': lon, 'lat': lat, 'type': 'html'};
-	WV.layers[lname].layerType.dataHandler([rec], lname);
-	/*
-	WV.Note.initNote(lon, lat, url);
-	WV.Note.setVisibility(true);
-	*/
+        var gpos = Cesium.Cartographic.fromCartesian(cartesian);
+        var lon = Cesium.Math.toDegrees(gpos.longitude);
+        var lat = Cesium.Math.toDegrees(gpos.latitude);
+        report("URL dropped at: " + lon + " " + lat);
+        var lname = "beyondthefence";
+        var rec = {
+            'url': url,
+            'lon': lon, 'lat': lat, 'type': 'html'
+        };
+        WV.layers[lname].layerType.dataHandler([rec], lname);
+        /*
+        WV.Note.initNote(lon, lat, url);
+        WV.Note.setVisibility(true);
+        */
 
     }
     else {
-	report("Cannot determine position for URL");
+        report("Cannot determine position for URL");
     }
 }
 
-WV.handleDroppedFile = function(e, file)
-{
-    report("handling File: "+file.name+" "+file.type);
+WV.handleDroppedFile = function (e, file) {
+    report("handling File: " + file.name + " " + file.type);
     //E = e;
     var pos = e;
     var cartesian = WV.viewer.camera.pickEllipsoid(pos, WV.scene.globe.ellipsoid);
     if (cartesian) {
-	var gpos = Cesium.Cartographic.fromCartesian(cartesian);
-	var lon = Cesium.Math.toDegrees(gpos.longitude);
-	var lat = Cesium.Math.toDegrees(gpos.latitude);
-	report("File dropped at: "+lon+" "+lat);
-	var reader = new FileReader();
-	if (file.name.indexOf("kml") > 0) {
-	    reader.onload = function(e) {
-		var dataURL = reader.result;
-		//report("gotDataURL "+dataURL);
-		ds = WV.addKML(dataURL);
-		ds.then(function(ent) {
-			report("loaded ds ent: "+ent);
-			WV.viewer.flyTo(ent, {duration: 10});
-		    });
-	    }
-	    reader.readAsDataURL(file);
-	}
-	else if (file.name.indexOf(".json") > 0) {
-	    reader.onload = function(e) {
-		var text = reader.result;
-		report("dropped JSON: "+text);
-		obj = JSON.parse(text);
-		report("obj: "+obj);
-		WV.handleDroppedJSON(file.name, obj);
-	    }
-	    reader.readAsText(file);
-	}
-	else {
-		report("Unrecognized file "+file.name);
-	}
-	//WV.Note.initNote(lon, lat, url);
-	//WV.Note.setVisibility(true);
+        var gpos = Cesium.Cartographic.fromCartesian(cartesian);
+        var lon = Cesium.Math.toDegrees(gpos.longitude);
+        var lat = Cesium.Math.toDegrees(gpos.latitude);
+        report("File dropped at: " + lon + " " + lat);
+        var reader = new FileReader();
+        if (file.name.indexOf("kml") > 0) {
+            reader.onload = function (e) {
+                var dataURL = reader.result;
+                //report("gotDataURL "+dataURL);
+                ds = WV.addKML(dataURL);
+                ds.then(function (ent) {
+                    report("loaded ds ent: " + ent);
+                    WV.viewer.flyTo(ent, { duration: 10 });
+                });
+            }
+            reader.readAsDataURL(file);
+        }
+        else if (file.name.indexOf(".json") > 0) {
+            reader.onload = function (e) {
+                var text = reader.result;
+                report("dropped JSON: " + text);
+                obj = JSON.parse(text);
+                report("obj: " + obj);
+                WV.handleDroppedJSON(file.name, obj);
+            }
+            reader.readAsText(file);
+        }
+        else {
+            report("Unrecognized file " + file.name);
+        }
+        //WV.Note.initNote(lon, lat, url);
+        //WV.Note.setVisibility(true);
     }
     else {
-	report("Cannot determine position for Dropped File");
+        report("Cannot determine position for Dropped File");
     }
 }
 
-WV.handleDroppedJSON = function(fname, obj)
-{
-    report("got dropped file "+fname);
-    report("obj: "+WV.toJSON(obj));
+WV.handleDroppedJSON = function (fname, obj) {
+    report("got dropped file " + fname);
+    report("obj: " + WV.toJSON(obj));
     if (obj.type == "Layer") {
-	var name = obj.name;
-	var layer = WV.layers[name];
-	layer.handleLocalData(obj);
+        var name = obj.name;
+        var layer = WV.layers[name];
+        layer.handleLocalData(obj);
     }
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     report("Starting...");
     wvCom = new WV.WVCom();
     var layersName = WV.getParameterByName("layers", document.location.search);
     var userName = WV.getParameterByName("user", document.location.search);
-    report("*********************** userName: "+userName);
+    report("*********************** userName: " + userName);
     if (userName) {
-	WV.myName = userName;
+        WV.myName = userName;
     }
     if (layersName) {
-	WV.layersUrl = "data/"+layersName+".json";
+        WV.layersUrl = "data/" + layersName + ".json";
     }
     WV.getLayers();
     WV.setupCesium();

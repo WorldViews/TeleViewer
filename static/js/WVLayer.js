@@ -448,6 +448,9 @@ WV.recurseLayers = function(layers, cbList, prefix)
 {
     layers.forEach(function(spec) {
         //report("---------------------------------------------------");
+    if (spec.ignoreLayer) {
+        return;
+    }
 	if (spec.type == 'folder') {
 	    var div = WV.addLayerFolder(spec, cbList, prefix);
 	    layers = spec['layers'];

@@ -62,8 +62,41 @@
                "iconUrl": "/static/img/billboards/temple_trans.png",
                "layerType": "youtube",
                "dataFile": "/static/data/temples_data.json"
+            },
+            {
+               "name": "surfing",
+               "description": "Surfing videos",
+               "maxNum": 8000,
+               "visible": false,
+               "scale": 0.06,
+               "iconUrl": "/static/img/billboards/surfing.png",
+               "layerType": "youtube",
+               "dataFile": "/static/data/surfing_data.json"
+            },
+            {
+               "name": "surfing2",
+               "description": "Surfing videos (all)",
+               "maxNum": 8000,
+               "visible": false,
+               "scale": 0.06,
+               "iconUrl": "surfing.png",
+               "layerType": "youtube",
+               "dataFile": "/static/data/surfing0_data.json"
+            },
+            {
+               "name": "waterSports3D",
+               "description": "3D Water fun videos",
+               "maxNum": 8000,
+               "visible": false,
+               "iconUrl": "/static/img/billboards/surfing.png",
+               "layerType": "youtube",
+               "dataFile": "/static/data/waterSports3D_data.json"
             }
          ]
+      },
+      {
+         "name": "dynYouTube",
+         "description": "YouTube Search"
       },
       {
          "name": "virtualphotowalks",
@@ -77,6 +110,18 @@
          "dataFile": "/static/data/virtualphotowalks_data.json"
       },
       {
+         "name": "periscope",
+         "description": "Periscope",
+         "iconUrl": "/static/img/billboards/periscopeIcon.png",
+         "scale": 0.06,
+         "height": 500000,
+         "showTethers": true,
+         "layerType": "html",
+         "dataFile": "/static/data/periscope_data.json",
+         "windowName": "Periscope",
+         "visible": false
+      },
+      {
          "name": "hikes",
          "require": "WVRobots.js",
          "layerType": "trails",
@@ -87,7 +132,6 @@
       {
          "name": "Drones",
          "type": "folder",
-         "open": false,
          "layers": [
             {
                "name": "drones_tbd",
@@ -124,7 +168,6 @@
       {
          "name": "Wiki",
          "type": "folder",
-         "open": false,
          "layers": [
             {
                "name": "localwiki",
@@ -177,9 +220,7 @@
       },
       {
          "name": "Social Interactive",
-         "ignoreLayer": true,
          "type": "folder",
-         "open": false,
          "layers": [
             {
                "name": "chat",
@@ -260,8 +301,27 @@
                "layerType": "html",
                "dataFile": "/static/data/Marks_Blog_data.json",
                "visible": false
+            },
+            {
+               "name": "zilong",
+               "description": "Zilong's Journey",
+               "iconUrl": "/static/img/billboards/yinyang.png",
+               "layerType": "html",
+               "dataFile": "/static/data/zilong_data.json",
+               "visible": false
             }
          ]
+      },
+      {
+         "name": "geovid",
+         "description": "GeoVid Project",
+         "iconUrl": "/static/img/billboards/geovid_logo.png",
+         "height": 5000,
+         "scale": 0.10,
+         "showTethers": true,
+         "layerType": "html",
+         "dataFile": "/static/data/geovid_data.json",
+         "visible": false
       },
       {
          "name": "Experimental",
