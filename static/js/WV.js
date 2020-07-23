@@ -38,10 +38,10 @@ Cesium.BingMapsApi.defaultKey = "ApkF-vdI2ix3rcw-JCklfZG98zznVZfuAzRGf1khbyRZrev
 var cesiumContainer = document.getElementById('cesiumContainer');
 
 WV.viewer = new Cesium.Viewer('cesiumContainer', {
-    //imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-    //    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer',
-    //    enablePickFeatures: false
-    //}),
+    imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer',
+        enablePickFeatures: false
+    }),
     //Use OpenStreetMaps
     //imageryProvider : new Cesium.OpenStreetMapImageryProvider({
     //    url : 'https://a.tile.openstreetmap.org/'
