@@ -32,16 +32,16 @@ WV.useSocketIO = false;
 WV.statusInterval = 1000;
 var wvCom = null;
 
-//Cesium.BingMapsApi.defaultKey = "ApkF-vdI2ix3rcw-JCklfZG98zznVZfuAzRGf1khbyRZrev_qYq032B23YtYa-eX";
-Cesium.BingMapsApi.defaultKey = "AuyZOIEf9XscoNflR1m8YpxO9yAb7WBpFLATxfQ1RVGlAUtH79glbAF088j8E2nP";
+Cesium.BingMapsApi.defaultKey = "ApkF-vdI2ix3rcw-JCklfZG98zznVZfuAzRGf1khbyRZrev_qYq032B23YtYa-eX";
+//Cesium.BingMapsApi.defaultKey = "AuyZOIEf9XscoNflR1m8YpxO9yAb7WBpFLATxfQ1RVGlAUtH79glbAF088j8E2nP";
 
 var cesiumContainer = document.getElementById('cesiumContainer');
 
 WV.viewer = new Cesium.Viewer('cesiumContainer', {
-    imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer',
-        enablePickFeatures: false
-    }),
+    //imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
+    //    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer',
+    //    enablePickFeatures: false
+    //}),
     //Use OpenStreetMaps
     //imageryProvider : new Cesium.OpenStreetMapImageryProvider({
     //    url : 'https://a.tile.openstreetmap.org/'
