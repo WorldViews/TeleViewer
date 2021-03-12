@@ -34,14 +34,15 @@ var wvCom = null;
 
 Cesium.BingMapsApi.defaultKey = "ApkF-vdI2ix3rcw-JCklfZG98zznVZfuAzRGf1khbyRZrev_qYq032B23YtYa-eX";
 //Cesium.BingMapsApi.defaultKey = "AuyZOIEf9XscoNflR1m8YpxO9yAb7WBpFLATxfQ1RVGlAUtH79glbAF088j8E2nP";
-
+Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkZDE5ODVhZC1hNDJkLTRlMDEtYTBiYy05NDg1NjJlNWZjYjkiLCJpZCI6MzE1ODksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1OTU2MDcxODF9.ssEuwsyEX1lydTuI52SENRyVDUuNS4SqJkuZ9HjpPl8';
 var cesiumContainer = document.getElementById('cesiumContainer');
 
 WV.viewer = new Cesium.Viewer('cesiumContainer', {
-    imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer',
-        enablePickFeatures: false
-    }),
+    imageryProvider: new Cesium.BingMapsImageryProvider({
+                    url : 'https://dev.virtualearth.net',
+                    key: 'ApkF-vdI2ix3rcw-JCklfZG98zznVZfuAzRGf1khbyRZrev_qYq032B23YtYa-eX',
+                    mapStyle: Cesium.BingMapsStyle.AERIAL
+                }),
     //Use OpenStreetMaps
     //imageryProvider : new Cesium.OpenStreetMapImageryProvider({
     //    url : 'https://a.tile.openstreetmap.org/'
